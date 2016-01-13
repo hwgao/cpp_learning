@@ -7,8 +7,8 @@
 template <typename T>
 class Printable {
 public:
-	virtual std::string toString() = 0;
-	friend std::ostream & operator<< (std::ostream &os, const T t) {
+	virtual std::string toString() const = 0;
+	friend std::ostream & operator<< (std::ostream &os, const T &t) {
 		os << t.toString();
 		os.flush();
 		return os;

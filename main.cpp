@@ -1096,7 +1096,7 @@ using namespace std;
 class Widget : public Printable<Widget> {
 public:
 	Widget(int x = 0, int y = 0) : x_{ x }, y_{ y } {}
-	string toString() override {
+	string toString() const override {
 #if 1
 		// safe c++11
 		return "[Widget] x=" + to_string(x_) + ", y=" + to_string(y_);
@@ -1119,7 +1119,7 @@ auto main() -> int {
 	auto d = 20;
 
 	auto aa = new Widget{3, 4};
-	cout << aa->toString() << endl;
+	cout << *aa << endl;
 
 	cin.get();
 	return 0;
