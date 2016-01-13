@@ -53,7 +53,6 @@ Thumbs.db
 *.ncb
 *.sdf
 *.opensdf
-*vcxproj.*
 Debug
 Release
 
