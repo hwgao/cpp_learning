@@ -1088,6 +1088,46 @@ auto main() -> int {
 
 #if 1
 #include <iostream>
+#include <string>
+#include <sstream>
+#include "printable.hpp"
+using namespace std;
+
+class Widget : public Printable<Widget> {
+public:
+	Widget(int x = 0, int y = 0) : x_{ x }, y_{ y } {}
+	string toString() override {
+#if 1
+		// safe c++11
+		return "[Widget] x=" + to_string(x_) + ", y=" + to_string(y_);
+#else
+		// safe slow
+		ostringstream sstm;
+		sstm << "[Widget] x=" << x_ << ", y=" << y_;
+		return sstm.str();
+#endif
+	}
+private:
+	int x_;
+	int y_;
+};
+
+auto main() -> int {
+	auto a = new int{ 10 };
+	auto b = int{ 20 };
+	auto c = { 20 };
+	auto d = 20;
+
+	auto aa = new Widget{3, 4};
+	cout << aa->toString() << endl;
+
+	cin.get();
+	return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
 #include <vector>
 using namespace std;
 
