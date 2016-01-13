@@ -1090,6 +1090,8 @@ auto main() -> int {
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <cassert>
 #include "printable.hpp"
 using namespace std;
 
@@ -1120,8 +1122,22 @@ auto main() -> int {
 
 	auto aa = new Widget{3, 4};
 	cout << *aa << endl;
+	auto bb = new Widget{};
+	cout << *bb << endl;
+	auto cc = Widget{};
+	cout << cc << endl;
+	auto dd = Widget{10, 30};
+	cout << dd << endl;
 
-	cin.get();
+	vector<int> ee(3, 4);
+	assert(ee.size() == 3);
+
+	vector<int> ff{ 3, 4 };
+	assert(ff.size() == 2);
+
+	auto gg = vector < int > {4, 5};
+	assert(gg.size() == 2);
+
 	return 0;
 }
 #endif
@@ -1132,10 +1148,10 @@ auto main() -> int {
 using namespace std;
 
 auto main() -> int {
-    int val = 10;
+	auto val = int{ 10 };
     auto a = {val, 3};
-    auto b {val};
-    auto c = float{3.4};
+    auto b = {val};
+    auto c = float{3.4f};
     cout << c << endl;
     cout << a.size() << endl;
 
@@ -1146,7 +1162,7 @@ auto main() -> int {
     auto f = [](const vector<int> &x) { return x.size(); };
     cout << f(v1) << endl;
 
-    auto d1 = int(54*3.4);
+    auto d1 = int{54*3};
     cout << d1 << endl;
 
 
