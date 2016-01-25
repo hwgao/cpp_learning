@@ -1143,6 +1143,9 @@ auto main() -> int {
 	auto gg = vector < int > {4, 5};
 	assert(gg.size() == 2);
 
+    constexpr int aaa = 10;
+    int bbb[aaa];
+
 	return 0;
 }
 #endif
@@ -1170,6 +1173,71 @@ auto main() -> int {
     auto d1 = int{54*3};
     cout << d1 << endl;
 
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+using namespace std;
+
+class B {
+public:
+    int a;
+};
+
+class T {
+public:
+    int a;
+    int b;
+    B   sb;
+};
+
+struct S {
+    int a;
+    int b;
+};
+
+auto main() -> int {
+
+    //auto t = T{};
+    // T t{};
+    T t;
+    cout << t.a << endl;
+    cout << t.sb.a << endl;
+
+    decltype(t) tt{};
+    cout << tt.a << endl;
+
+
+    S s{};
+    cout << s.a << endl;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+int main() {
+    vector<std::unique_ptr<int>> v;
+    v.push_back(std::unique_ptr<int>{new int{10}});
+    v.push_back(std::unique_ptr<int>{new int{9}});
+    v.push_back(std::unique_ptr<int>{new int{8}});
+
+    // must use reference
+    for (auto &i : v) {
+        cout << *i << endl;
+    }
 
     return 0;
 }
