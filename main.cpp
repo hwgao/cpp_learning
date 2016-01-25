@@ -1115,9 +1115,12 @@ private:
 };
 
 auto main() -> int {
-	//auto a = new int{ 10 };
-	//auto b = int{ 20 };
-	//auto c = { 20 };
+	auto a = new int{ 10 };
+	auto b = int{ 20 };
+    // Direct list initialization of a variable with a deduced type will change meaning in
+    // a future version of Clang; insert an '=' to avoid a change in behavior
+    // auto c{20};
+    auto c = { 20 };
 	// For single parameter, prefer the following one.
 	auto d = 20;
 
