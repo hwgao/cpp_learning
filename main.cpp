@@ -1086,7 +1086,7 @@ auto main() -> int {
 }
 #endif
 
-#if 1
+#if 0
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -1115,11 +1115,13 @@ private:
 };
 
 auto main() -> int {
-	auto a = new int{ 10 };
-	auto b = int{ 20 };
-	auto c = { 20 };
+	//auto a = new int{ 10 };
+	//auto b = int{ 20 };
+	//auto c = { 20 };
+	// For single parameter, prefer the following one.
 	auto d = 20;
 
+	// For multiple parameters, prefer the following one.
 	auto aa = new Widget{3, 4};
 	cout << *aa << endl;
 	auto bb = new Widget{};
@@ -1167,5 +1169,102 @@ auto main() -> int {
 
 
     return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <vector>
+#include <array>
+#include <set>
+#include <cassert>
+using namespace std;
+
+auto main() -> int {
+	int t[] = { 3, 4, 2, 1, 6, 5, 7, 9, 8, 0 };
+	auto v = vector < int > {t, t + 10};
+	assert(v.size() == sizeof(t) / sizeof(t[0]));
+	auto s1 = multiset < int > {v.begin(), v.end()};
+	assert(s1.size() == sizeof(t) / sizeof(t[0]));
+
+	array<int, 5> a = {0, 1, 2, 3, 4};
+	assert(a.size() == 5);
+	vector<int> c = { t, t + 10 };
+	vector<int> e = { 4, 5 };
+	assert(e.size() == 2);
+
+	const int n = 10;
+	double aaa[n];
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <array>
+#include <set>
+#include <cassert>
+using namespace std;
+
+auto main() -> int {
+	set<int> s{};
+	assert(s.size() == 0);
+	assert(s.empty());
+	s = set<int>{1, 2, 3, 4, 5};
+	assert(s.size() == 5);
+	assert(!s.empty());
+
+	s.insert(0);
+	assert(s.size() == 6);
+
+	auto p = s.emplace(6);
+	assert(*p.first == 6);
+	assert(p.second);
+
+	p = s.emplace(6);
+	assert(*p.first == 6);
+	assert(!p.second);
+	
+	for (auto i : s) {
+		cout << i << endl;
+	}
+
+	auto next = s.erase(begin(s));
+	assert(*next == 1);
+
+	// return the number of the removed elements
+	assert(1 == s.erase(6));
+	assert(0 == s.erase(16));
+
+	auto i = s.find(3);
+	assert(*i == 3);
+
+	string str{};
+	cout << str.length() << endl;
+}
+#endif
+
+#if 1
+// A. nested function by lambda
+// B. Recursive lambda
+#include <iostream>
+#include <functional>
+using namespace std;
+
+int main() {
+	// An enclosing function local variable can't be referenced in a lambda boby unless it is in the capture list
+	// std::function<void(int)> f = [](int i) {
+	// A variable declared with an auto type specifier can't appear in its own initializer
+	// auto f = [&](int i) {
+	std::function<void(int)> f = [&](int i) {
+		cout << i << "\n";
+		if (i > 10)
+			return;
+
+		f(i + 1);
+	};
+
+	f(3);
 }
 #endif
