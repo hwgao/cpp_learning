@@ -1316,7 +1316,7 @@ auto main() -> int {
 }
 #endif
 
-#if 1
+#if 0
 // A. nested function by lambda
 // B. Recursive lambda
 #include <iostream>
@@ -1339,3 +1339,33 @@ int main() {
 	f(3);
 }
 #endif
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <functional>
+#include <cassert>
+
+namespace notstd {
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+}
+int main() {
+    auto u = notstd::make_unique<int>(3);
+    std::cout << *u << std::endl;
+
+    auto a = std::vector<std::unique_ptr<int>>{};
+    a.push_back(notstd::make_unique<int>(10));
+    a.push_back(notstd::make_unique<int>(12));
+    a.push_back(notstd::make_unique<int>(14));
+
+    for (auto& v : a) {
+        std::cout << *v << std::endl;
+    }
+
+
+    return 0;
+}
