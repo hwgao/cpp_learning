@@ -1316,7 +1316,7 @@ auto main() -> int {
 }
 #endif
 
-#if 1
+#if 0
 // A. nested function by lambda
 // B. Recursive lambda
 #include <iostream>
@@ -1337,5 +1337,189 @@ int main() {
 	};
 
 	f(3);
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <memory>
+#include <cassert>
+#include "make_unique.hpp"
+
+int main() {
+    auto first = std::unique_ptr<int>{new int{5}};
+    auto second = std::unique_ptr<int>{new int{5}};
+
+    // You don't have to qualify the namespace for functions if one or more argument types are
+    // defined in the namespace of the function.
+    swap(first, second);
+
+    auto c = std::vector<int>{};
+    auto d = new std::vector<int>{};
+
+    std::cout << "=======================\n";
+    c = {1, 2, 3, 4 ,5};
+    assert(c.size() == 5);
+    std::for_each(begin(c), end(c), [&c](int i){ std::cout << i << "\n"; });
+    std::cout << "=======================\n";
+    for (auto i : c) {
+        std::cout << i << "\n";
+    }
+
+    std::cout << "=======================\n";
+    d->push_back(5);
+    d->push_back(4);
+    d->push_back(3);
+    d->push_back(2);
+    d->push_back(1);
+    assert(d->size() == 5);
+    std::for_each(begin(*d), end(*d), [d](int i){ std::cout << i << "\n"; });
+    std::cout << "=======================\n";
+    d->emplace_back(6);
+    for (auto i : *d) {
+        std::cout << i << "\n";
+    }
+    delete d;
+
+    std::cout << "=======================\n";
+    auto e = std::unique_ptr<std::vector<int>> {new std::vector<int>{4, 5, 6, 7}};
+    for (auto m : *e) {
+        std::cout << m << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto f = pg::make_unique<std::vector<int>>(std::initializer_list<int>{5, 6, 7, 8, 9});
+    for (auto &v : *f) {
+        std::cout << v << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto l = {5, 6, 7, 8, 9};
+    auto n = pg::make_unique<std::vector<int>>(l);
+    for (auto &v : *n) {
+        std::cout << v << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto nn = pg::make_unique<int[]>(4);
+
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <array>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+template <typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args) {
+   return std::unique_ptr<T>(new T{std::forward<Args>(args)...});
+}
+
+int main() {
+    std::cout << "=======================\n";
+    auto f = make_unique<std::vector<int>>(5, 6, 7, 8, 9);
+    assert(f->size() == 5);
+    std::cout << "=======================\n";
+    auto g = make_unique<std::vector<int>>(5, 6);
+    assert(g->size() == 2);
+    std::cout << "=======================\n";
+    auto h = make_unique<std::array<int, 3>>(3, 4, 5);
+    assert(h->size() == 3);
+
+    return 0;
+}
+#endif
+
+#if 1
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <array>
+#include <cassert>
+#include "optional.hpp"
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+class Address {
+private:
+    int a;
+    int b;
+public:
+    Address(int a = 0, int b = 0) : a(a), b(b) {}
+    string toString() const {
+        return std::to_string(a + b);
+    }
+};
+
+class Person {
+public:
+    Person(string firstName, string lastName) : firstName_(firstName), lastName_(lastName) {}
+    string firstName_, lastName_;
+    pg::optional<string> middleName_;
+    pg::optional<vector<string>> childrenNames_;
+    pg::optional<Address> adr_;
+};
+
+int main() {
+    Person p { "Mike", "M" };
+    p.middleName_ = "hhh";
+
+    if (p.middleName_) {
+        cout << *(p.middleName_) << endl;
+    }
+
+    p.middleName_ = "HHH";
+    if (p.middleName_.is_initialized()) {
+        cout << p.middleName_.get() << endl;
+    }
+
+    vector<string> il = { "Yexuan", "Yixuan", "Other"};
+    p.childrenNames_ = il;
+
+    if (p.childrenNames_) {
+        for (auto v : *(p.childrenNames_)) {
+            cout << v << endl;
+        }
+    }
+
+    auto vv = vector<string>{};
+    vv = {"AA", "BB"};
+    for (auto v : vv) {
+        cout << v << endl;
+    }
+    vv = {"dd", "bb"};
+    for (auto v : vv) {
+        cout << v << endl;
+    }
+// Wrong
+//    auto ss = {"bb", "dd"};
+//    vv = ss;
+
+    Address adr = {4, 5};
+    p.adr_ = adr;
+
+    if (p.adr_) {
+        // . has higher priority than *, so "*(p.adr_).toString()" is wrong
+        cout << (*p.adr_).toString() << endl;
+        cout << (p.adr_)->toString() << endl;
+        cout << (p.adr_).get().toString() << endl;
+    }
+
+    return 0;
 }
 #endif

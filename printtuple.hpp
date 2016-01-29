@@ -3,6 +3,7 @@
 #include <tuple>
 #include <iostream>
 
+namespace pg {
 // helper: print element with index IDX of tuple with MAX elements
 template <int IDX, int MAX, typename... Args>
 struct PRINT_TUPLE {
@@ -26,4 +27,6 @@ std::ostream& operator << (std::ostream& strm,
     PRINT_TUPLE<0, sizeof...(Args), Args...>::print(strm, t);
     return strm << "]";
 }
+}
 #endif // PRINTTUPLE_HPP
+
