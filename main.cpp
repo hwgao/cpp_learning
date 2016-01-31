@@ -1086,7 +1086,7 @@ auto main() -> int {
 }
 #endif
 
-#if 1
+#if 0
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -1117,9 +1117,14 @@ private:
 auto main() -> int {
 	auto a = new int{ 10 };
 	auto b = int{ 20 };
+    // Direct list initialization of a variable with a deduced type will change meaning in
+    // a future version of Clang; insert an '=' to avoid a change in behavior
+    // auto c{20};
 	auto c = { 20 };
+	// For single parameter, prefer the following one.
 	auto d = 20;
 
+	// For multiple parameters, prefer the following one.
 	auto aa = new Widget{3, 4};
 	cout << *aa << endl;
 	auto bb = new Widget{};
@@ -1137,6 +1142,9 @@ auto main() -> int {
 
 	auto gg = vector < int > {4, 5};
 	assert(gg.size() == 2);
+
+    constexpr int aaa = 10;
+    int bbb[aaa];
 
 	return 0;
 }
@@ -1164,6 +1172,384 @@ auto main() -> int {
 
     auto d1 = int{54*3};
     cout << d1 << endl;
+
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+using namespace std;
+
+class B {
+public:
+    int a;
+};
+
+class T {
+public:
+    int a;
+    int b;
+    B   sb;
+};
+
+struct S {
+    int a;
+    int b;
+};
+
+auto main() -> int {
+
+    //auto t = T{};
+    // T t{};
+    T t;
+    cout << t.a << endl;
+    cout << t.sb.a << endl;
+
+    decltype(t) tt{};
+    cout << tt.a << endl;
+
+
+    S s{};
+    cout << s.a << endl;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+int main() {
+    vector<std::unique_ptr<int>> v;
+    v.push_back(std::unique_ptr<int>{new int{10}});
+    v.push_back(std::unique_ptr<int>{new int{9}});
+    v.push_back(std::unique_ptr<int>{new int{8}});
+
+    // must use reference
+    for (auto &i : v) {
+        cout << *i << endl;
+    }
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <vector>
+#include <array>
+#include <set>
+#include <cassert>
+using namespace std;
+
+auto main() -> int {
+	int t[] = { 3, 4, 2, 1, 6, 5, 7, 9, 8, 0 };
+	auto v = vector < int > {t, t + 10};
+	assert(v.size() == sizeof(t) / sizeof(t[0]));
+	auto s1 = multiset < int > {v.begin(), v.end()};
+	assert(s1.size() == sizeof(t) / sizeof(t[0]));
+
+	array<int, 5> a = {0, 1, 2, 3, 4};
+	assert(a.size() == 5);
+	vector<int> c = { t, t + 10 };
+	vector<int> e = { 4, 5 };
+	assert(e.size() == 2);
+
+	const int n = 10;
+	double aaa[n];
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <array>
+#include <set>
+#include <cassert>
+using namespace std;
+
+auto main() -> int {
+	set<int> s{};
+	assert(s.size() == 0);
+	assert(s.empty());
+	s = set<int>{1, 2, 3, 4, 5};
+	assert(s.size() == 5);
+	assert(!s.empty());
+
+	s.insert(0);
+	assert(s.size() == 6);
+
+	auto p = s.emplace(6);
+	assert(*p.first == 6);
+	assert(p.second);
+
+	p = s.emplace(6);
+	assert(*p.first == 6);
+	assert(!p.second);
+	
+	for (auto i : s) {
+		cout << i << endl;
+	}
+
+	auto next = s.erase(begin(s));
+	assert(*next == 1);
+
+	// return the number of the removed elements
+	assert(1 == s.erase(6));
+	assert(0 == s.erase(16));
+
+	auto i = s.find(3);
+	assert(*i == 3);
+
+	string str{};
+	cout << str.length() << endl;
+}
+#endif
+
+#if 0
+// A. nested function by lambda
+// B. Recursive lambda
+#include <iostream>
+#include <functional>
+using namespace std;
+
+int main() {
+	// An enclosing function local variable can't be referenced in a lambda boby unless it is in the capture list
+	// std::function<void(int)> f = [](int i) {
+	// A variable declared with an auto type specifier can't appear in its own initializer
+	// auto f = [&](int i) {
+	std::function<void(int)> f = [&](int i) {
+		cout << i << "\n";
+		if (i > 10)
+			return;
+
+		f(i + 1);
+	};
+
+	f(3);
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <memory>
+#include <cassert>
+#include "make_unique.hpp"
+
+int main() {
+    auto first = std::unique_ptr<int>{new int{5}};
+    auto second = std::unique_ptr<int>{new int{5}};
+
+    // You don't have to qualify the namespace for functions if one or more argument types are
+    // defined in the namespace of the function.
+    swap(first, second);
+
+    auto c = std::vector<int>{};
+    auto d = new std::vector<int>{};
+
+    std::cout << "=======================\n";
+    c = {1, 2, 3, 4 ,5};
+    assert(c.size() == 5);
+    std::for_each(begin(c), end(c), [&c](int i){ std::cout << i << "\n"; });
+    std::cout << "=======================\n";
+    for (auto i : c) {
+        std::cout << i << "\n";
+    }
+
+    std::cout << "=======================\n";
+    d->push_back(5);
+    d->push_back(4);
+    d->push_back(3);
+    d->push_back(2);
+    d->push_back(1);
+    assert(d->size() == 5);
+    std::for_each(begin(*d), end(*d), [d](int i){ std::cout << i << "\n"; });
+    std::cout << "=======================\n";
+    d->emplace_back(6);
+    for (auto i : *d) {
+        std::cout << i << "\n";
+    }
+    delete d;
+
+    std::cout << "=======================\n";
+    auto e = std::unique_ptr<std::vector<int>> {new std::vector<int>{4, 5, 6, 7}};
+    for (auto m : *e) {
+        std::cout << m << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto f = pg::make_unique<std::vector<int>>(std::initializer_list<int>{5, 6, 7, 8, 9});
+    for (auto &v : *f) {
+        std::cout << v << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto l = {5, 6, 7, 8, 9};
+    auto n = pg::make_unique<std::vector<int>>(l);
+    for (auto &v : *n) {
+        std::cout << v << std::endl;
+    }
+
+    std::cout << "=======================\n";
+    auto nn = pg::make_unique<int[]>(4);
+
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <array>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+template <typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args) {
+   return std::unique_ptr<T>(new T{std::forward<Args>(args)...});
+}
+
+int main() {
+    std::cout << "=======================\n";
+    auto f = make_unique<std::vector<int>>(5, 6, 7, 8, 9);
+    assert(f->size() == 5);
+    std::cout << "=======================\n";
+    auto g = make_unique<std::vector<int>>(5, 6);
+    assert(g->size() == 2);
+    std::cout << "=======================\n";
+    auto h = make_unique<std::array<int, 3>>(3, 4, 5);
+    assert(h->size() == 3);
+
+    return 0;
+}
+#endif
+
+#if 1
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <array>
+#include <cassert>
+#include "optional.hpp"
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+class Address {
+private:
+    int a;
+    int b;
+public:
+    Address(int a = 0, int b = 0) : a(a), b(b) {}
+    string toString() const {
+        return std::to_string(a + b);
+    }
+};
+
+class Person {
+public:
+    Person(string firstName, string lastName) : firstName_(firstName), lastName_(lastName) {}
+    string firstName_, lastName_;
+    pg::optional<string> middleName_;
+    pg::optional<vector<string>> childrenNames_;
+    pg::optional<Address> adr_;
+};
+
+int main() {
+    Person p { "Mike", "M" };
+    p.middleName_ = "hhh";
+
+    if (p.middleName_) {
+        cout << *(p.middleName_) << endl;
+    }
+
+    p.middleName_ = "HHH";
+    if (p.middleName_.is_initialized()) {
+        cout << p.middleName_.get() << endl;
+    }
+
+    vector<string> il = { "Yexuan", "Yixuan", "Other"};
+    p.childrenNames_ = il;
+
+    if (p.childrenNames_) {
+        for (auto v : *(p.childrenNames_)) {
+            cout << v << endl;
+        }
+    }
+
+    auto vv = vector<string>{};
+    vv = {"AA", "BB"};
+    for (auto v : vv) {
+        cout << v << endl;
+    }
+    vv = {"dd", "bb"};
+    for (auto v : vv) {
+        cout << v << endl;
+    }
+// Wrong
+//    auto ss = {"bb", "dd"};
+//    vv = ss;
+
+    Address adr = {4, 5};
+    p.adr_ = adr;
+
+    if (p.adr_) {
+        // . has higher priority than *, so "*(p.adr_).toString()" is wrong
+        cout << (*p.adr_).toString() << endl;
+        cout << (p.adr_)->toString() << endl;
+        cout << (p.adr_).get().toString() << endl;
+    }
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <functional>
+#include <cassert>
+
+namespace notstd {
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+}
+int main() {
+    auto u = notstd::make_unique<int>(3);
+    std::cout << *u << std::endl;
+
+    auto a = std::vector<std::unique_ptr<int>>{};
+    a.push_back(notstd::make_unique<int>(10));
+    a.push_back(notstd::make_unique<int>(12));
+    a.push_back(notstd::make_unique<int>(14));
+
+    for (auto& v : a) {
+        std::cout << *v << std::endl;
+    }
 
 
     return 0;

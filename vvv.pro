@@ -8,5 +8,8 @@ CONFIG += C++11
 SOURCES += main.cpp
 
 HEADERS += \
-    printtuple.hpp
+    printtuple.hpp \
+    printable.hpp \
+    make_unique.hpp \
+    optional.hpp
 
