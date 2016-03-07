@@ -1099,7 +1099,7 @@ class Widget : public Printable<Widget> {
 public:
 	Widget(int x = 0, int y = 0) : x_{ x }, y_{ y } {}
 	string toString() const override {
-#if 1
+#if 01
 		// safe c++11
 		return "[Widget] x=" + to_string(x_) + ", y=" + to_string(y_);
 #else
@@ -1442,7 +1442,7 @@ int main() {
 }
 #endif
 
-#if 1
+#if 0
 #include <iostream>
 #include <string>
 #include <vector>
@@ -1554,4 +1554,745 @@ int main() {
 
     return 0;
 }
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <cstring>
+using std::cout;
+using std::endl;
+
+#if 00
+class String {
+public:
+    explicit String(const char *str): m_data(new char[strlen(str) + 1]) {
+        strcpy(m_data, str);
+    }
+
+    String(const String &other): m_data(new char[strlen(other.m_data) + 1]){
+        strcpy(m_data, other.m_data);
+    }
+
+    /*
+    String &operator=(String &other) {
+        String l(other);
+        std::swap(l.m_data, m_data);
+        return *this;
+    }
+    */
+
+    String &operator=(String other) {
+        std::swap(other.m_data, m_data);
+        return *this;
+    }
+
+    ~String() {
+        delete[] m_data;
+    }
+
+    char *str() {
+        return m_data;
+    }
+
+private:
+    char *m_data;
+    void copy(const char *str) {
+        m_data = new char[strlen(str) + 1];
+        strcpy(m_data, str);
+    }
+};
+#endif
+
+int main() {
+    String a("test");
+    String b("hhh");
+    a = String("hello");
+    a = b;
+    String d = String("ttttt");
+    std::cout << a.str() << endl;
+    std::cout << b.str() << endl;
+    std::cout << d.str() << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+int main() {
+    int a, b, c, d;
+    a = 10;
+    b =a++;
+    c=++a;
+    d=10*a++;
+
+    cout << b << endl;
+    cout << c << endl;
+    cout << d << endl;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+class A {
+protected:
+    int method1(int a, int b) { return 0; }
+};
+
+class B: public A {
+public:
+    int method1(int a, int b) { cout << "1\n"; return 0; }
+    // short method1(int a, int b) { cout << "2\n"; return 0; }
+private:
+    // int method1(int a, long b) { cout << "3\n"; return 0; }
+    // int method1(int a, int b) { return 0; }
+protected:
+    // static int method1(int a, int b) { return 0; }
+};
+
+class C: public B {
+public:
+    int method2(int a, int b) {
+        cout << "2-1\n";
+        // return method1(a, b);
+        return B::method1(a, b);
+    }
+};
+
+int main() {
+    B b;
+    // b.method1(3, 4);
+    C c;
+    c.method2(4, 5);
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <future>
+#include <chrono>
+using std::cout;
+using std::endl;
+
+int factorial(std::shared_future<int> f) {
+    int res = 1;
+    int N = f.get();
+    for (int i = N; i > 1; --i) {
+        res *= i;
+    }
+
+    cout << "Result is " << res << endl;
+    return res;
+}
+
+int main() {
+    int x;
+    auto p = std::promise<int>{};
+    auto f = p.get_future().share();
+    std::future<int> fu = std::async(std::launch::async, factorial, f);
+    std::future<int> fu2 = std::async(std::launch::async, factorial, f);
+    std::this_thread::sleep_for(std::chrono::microseconds(0));
+    p.set_value(4);
+    x = fu.get();
+    cout << x << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+using namespace std;
+
+int main() {
+    vector<int> vec1 = {8, 9, 9, 10};
+    vector<int> vec2 = {7, 9, 10};
+    vector<int> vec_out(10); // **** must be big enough to hold the result. As algorithm just operates
+                             // iterator, it doesn't know the underlying container and it can't use push_back.
+    cout << vec_out.size() << endl;
+    cout << vec_out.capacity() << endl;
+    auto it = set_difference(vec1.begin(), vec1.end(),
+                   vec2.begin(), vec2.end(),
+                   vec_out.begin());
+    vec_out.resize(it - vec_out.begin());
+    for_each(vec_out.begin(), vec_out.end(), [](int x){ cout << x << " "; });
+    cout << "\n";
+    cout << vec_out.size() << endl;
+
+    cout << "Test unique: ";
+    auto it1 = std::unique(vec1.begin(), vec1.end());
+    vec1.resize(it1 - vec1.begin());
+    for_each(vec1.begin(), vec1.end(), [](int x){ cout << x << " "; });
+    cout << "\n";
+
+    string s1 = "123";
+    auto ss = stoi(s1);
+    ss += 100;
+    cout << ss << endl;
+
+    cout << "test endl" << endl << "tttt" << endl;
+    cout << setw(8) << std::right << setfill('_') << 99 << endl;
+
+    istreambuf_iterator<char> i(cin);
+    ostreambuf_iterator<char> o(cout);
+    while (*i != 'x') {
+        *o++ = *i++;
+    }
+
+//    copy(istreambuf_iterator<char>(cin), istreambuf_iterator<char>(), ostreambuf_iterator<char>(cout));
+
+    stringstream sss;
+    sss << 89 << " hex: " << hex << showbase << 89 << endl;
+    cout << sss.str() << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <iterator>
+
+int main() {
+    std::vector<int> v1 {1, 2, 5, 5, 5, 9};
+    std::vector<int> v2 {2, 5, 7};
+    std::vector<int> diff;
+
+    std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                        std::inserter(diff, diff.begin()));
+
+    for (auto i : v1) std::cout << i << ' ';
+    std::cout << "minus ";
+    for (auto i : v2) std::cout << i << ' ';
+    std::cout << "is: ";
+
+    for (auto i : diff) std::cout << i << ' ';
+    std::cout << '\n';
+
+
+}
+#endif
+
+#if 0
+// set_difference example
+#include <iostream>     // std::cout
+#include <algorithm>    // std::set_difference, std::sort
+#include <vector>       // std::vector
+
+int main () {
+    int first[] = {5,10,15,20,25};
+    int second[] = {50,40,30,20,10};
+    std::vector<int> v(10);                      // 0  0  0  0  0  0  0  0  0  0
+    std::vector<int>::iterator it;
+
+    std::sort (first,first+5);     //  5 10 15 20 25
+    std::sort (second,second+5);   // 10 20 30 40 50
+
+    it=std::set_difference (first, first+5, second, second+5, v.begin());
+    //  5 15 25  0  0  0  0  0  0  0
+    v.resize(it-v.begin());                      //  5 15 25
+
+    std::cout << "The difference has " << (v.size()) << " elements:\n";
+    for (it=v.begin(); it!=v.end(); ++it)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <string>
+#include <deque>
+#include <cassert>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
+using std::cout;
+using std::endl;
+
+unsigned int Factorial( unsigned int number ) {
+    return number <= 1 ? number : Factorial(number-1)*number;
+}
+
+TEST_CASE( "Factorials are computed", "[factorial]" ) {
+//    REQUIRE( Factorial(0) == 1 );
+    REQUIRE( Factorial(1) == 1 );
+    REQUIRE( Factorial(2) == 2 );
+    REQUIRE( Factorial(3) == 6 );
+    REQUIRE( Factorial(10) == 3628800 );
+}
+
+TEST_CASE( "vectors can be sized and resized", "[vector]" ) {
+
+    std::vector<int> v( 5 );
+
+    REQUIRE( v.size() == 5 );
+    REQUIRE( v.capacity() >= 5 );
+
+    SECTION( "resizing bigger changes size and capacity" ) {
+        v.resize( 10 );
+
+        REQUIRE( v.size() == 10 );
+        REQUIRE( v.capacity() >= 10 );
+    }
+    SECTION( "resizing smaller changes size but not capacity" ) {
+        v.resize( 0 );
+
+        REQUIRE( v.size() == 0 );
+        REQUIRE( v.capacity() >= 5 );
+    }
+    SECTION( "reserving bigger changes capacity but not size" ) {
+        v.reserve( 10 );
+
+        REQUIRE( v.size() == 5 );
+        REQUIRE( v.capacity() >= 10 );
+    }
+    SECTION( "reserving smaller does not change size or capacity" ) {
+        v.reserve( 0 );
+
+        REQUIRE( v.size() == 5 );
+        REQUIRE( v.capacity() >= 5 );
+    }
+}
+
+TEST_CASE("deque can be inserted from both directions", "[deque]") {
+    std::deque<int> d;
+    REQUIRE(d.size() == 0);
+    SECTION("insert from the frontend") {
+        d.push_front(5);
+        REQUIRE(d.front() == 5);
+    }
+    SECTION("insert from the backend") {
+        d.push_back(4);
+        REQUIRE(d.back() == 4);
+
+    }
+}
+
+SCENARIO("deque can be inserted from the head", "[deque]") {
+    GIVEN("A deque") {
+        std::deque<int> d;
+        WHEN("insert to the head") {
+            d.push_front(10);
+            THEN("the size should increase 1") {
+                REQUIRE(d.size() == 1);
+            }
+            THEN("the first number is 10") {
+                REQUIRE(d.front() == 10);
+            }
+        }
+    }
+}
+
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <boost/signals2.hpp>
+using std::cout;
+using std::endl;
+
+int main() {
+    boost::signals2::signal<void()> s;
+    s.connect(1, []() { cout << "First" << endl; });
+    s.connect(0, []() { cout << "Zero" << endl; });
+
+    s();
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cstring>      // Needed for memset
+#include <sys/socket.h> // Needed for the socket functions
+#include <netdb.h>      // Needed for the socket functions
+
+int main()
+{
+
+    int status;
+    struct addrinfo host_info;       // The struct that getaddrinfo() fills up with data.
+    struct addrinfo *host_info_list; // Pointer to the to the linked list of host_info's.
+
+    // The MAN page of getaddrinfo() states "All  the other fields in the structure pointed
+    // to by hints must contain either 0 or a null pointer, as appropriate." When a struct
+    // is created in C++, it will be given a block of memory. This memory is not necessary
+    // empty. Therefor we use the memset function to make sure all fields are NULL.
+    memset(&host_info, 0, sizeof host_info);
+
+    std::cout << "Setting up the structs..."  << std::endl;
+
+    host_info.ai_family = AF_UNSPEC;     // IP version not specified. Can be both.
+    host_info.ai_socktype = SOCK_STREAM; // Use SOCK_STREAM for TCP or SOCK_DGRAM for UDP.
+
+    // Now fill up the linked list of host_info structs with google's address information.
+    status = getaddrinfo("www.google.com", "80", &host_info, &host_info_list);
+    // getaddrinfo returns 0 on succes, or some other value when an error occured.
+    // (translated into human readable text by the gai_gai_strerror function).
+    if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) ;
+
+
+    std::cout << "Creating a socket..."  << std::endl;
+    int socketfd ; // The socket descripter
+    socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype,
+    host_info_list->ai_protocol);
+    if (socketfd == -1)  std::cout << "socket error " ;
+
+    std::cout << "Connect()ing..."  << std::endl;
+    status = connect(socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+    if (status == -1)  std::cout << "connect error" ;
+
+
+    std::cout << "send()ing message..."  << std::endl;
+    char *msg = "GET / HTTP/1.1\nhost: www.google.com\n\n";
+    int len;
+    ssize_t bytes_sent;
+    len = strlen(msg);
+    bytes_sent = send(socketfd, msg, len, 0);
+
+
+    std::cout << "Waiting to recieve data..."  << std::endl;
+    ssize_t bytes_recieved;
+    char incoming_data_buffer[1000];
+    bytes_recieved = recv(socketfd, incoming_data_buffer,1000, 0);
+    // If no data arrives, the program will just wait here until some data arrives.
+    if (bytes_recieved == 0) std::cout << "host shut down." << std::endl ;
+    if (bytes_recieved == -1)std::cout << "recieve error!" << std::endl ;
+    std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
+    std::cout << incoming_data_buffer << std::endl;
+
+    std::cout << "Receiving complete. Closing socket..." << std::endl;
+    freeaddrinfo(host_info_list);
+    //close(socketfd);
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+int main() {
+    int num = 5;
+
+    int aa[num];
+    cout << sizeof(aa)/sizeof(aa[0]) << endl;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <string>
+using std::cout;
+using std::endl;
+using std::string;
+
+class Dog {
+    int age;
+    string name;
+public:
+    Dog(): age(3), name("dummy") {}
+    // 1
+    void setAge(const int& a) { cout << "const\n"; age = a; }
+    // 2
+    void setAge(int& a) { cout << "non-const\n"; age = a; }
+};
+
+int main() {
+    Dog a{};
+    // 1 is called -- "const int& a = 6" is right, "int &a = 6" is wrong
+    a.setAge(6);
+    int b = 5;
+    // 2 is called if it is defined, or 1 is called
+    a.setAge(b);
+    // Dog() returns a rvalue, and it can be changed too.
+    Dog().setAge(40);
+
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+class MyString {
+public:
+    MyString() {}
+    MyString(const MyString& rhs) {
+        cout << "copy constructor\n";
+    }
+
+    MyString& operator=(const MyString& rhs) {
+        cout << "copy assignment\n";
+    }
+
+    MyString& operator=(MyString&& rhs) {
+        cout << "move assignment\n";
+    }
+};
+
+struct Foo {
+    MyString name;
+};
+
+
+void foo(const MyString s) {
+    cout << "ffff" << endl;
+    Foo f;
+    // copy assignment is called. As const s can't be moved or casted to rvalue.
+    f.name = std::move(s);
+}
+
+int main() {
+    MyString m;
+    foo (m);
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+struct strange {
+  size_t count = 0;
+  strange() {}
+  strange(strange &&o):count(o.count) {
+      cout << "move\n";
+      o.count = 0;
+  }
+};
+
+int main() {
+    const strange s;
+    strange s2 = std::move(s);
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <memory>
+using std::cout;
+using std::endl;
+using std::shared_ptr;
+
+class Dog {
+public:
+    ~Dog() { cout << "Dog destroyed\n"; }
+    virtual void bark() { cout << "Dog bark\n"; }
+};
+
+class YellowDog : public Dog {
+public:
+    ~YellowDog() { cout << "Yellow dog destroyed\n"; }
+    void bark() { cout << "Yellow dog bark\n"; }
+};
+
+class DogFactory {
+public:
+    static shared_ptr<Dog> createYellowDog() {
+        return std::make_shared<YellowDog>();
+    }
+    static void bark(Dog &d) {
+        d.bark();
+    }
+};
+
+int main() {
+    {
+    // shared_ptr keeps track fo the original destructor to be used in its deleter.
+    // unique_ptr doesn't have this ability.
+    shared_ptr<Dog> dp = DogFactory::createYellowDog();
+    dp->bark();
+    }
+
+    {
+    cout << "===========================\n";
+    YellowDog yd;
+    DogFactory::bark(yd);
+    }
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+int main() {
+    int x = 0;
+    auto f1 = [=]() mutable { x = 42; };
+    f1();
+    cout << "x = " << x << endl;
+    auto f2 = [&]() { x = 42; };
+    f2();
+    cout << "x = " << x << endl;
+    // auto f3 = [=]() { x = 42; };
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+template<typename T>                // declaration for TD;
+class TD;                           // TD == "Type Displayer"
+
+template<typename T>                // template w/types of interest
+void f(T& param) {
+    TD<T> tType;                    // cause T to be shown
+    TD<decltype(param)> paramType;  // ditto for param's type
+}
+
+int main() {
+    int x =22;
+    const int& rx = x;
+    f(rx);
+
+    auto y =rx;
+    TD<decltype(y)> yType;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+template<typename T>
+void f(const T& param)
+{
+    cout << "T =     " << typeid(T).name() << "\n";
+    cout << "param = " << typeid(param).name() << "\n";
+}
+
+int main() {
+    int x =22;
+    const int& rx = x;
+    f(rx);
+
+    return 0;
+}
+#endif
+
+#if 1
+#include <string>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
+using std::string;
+
+string findCircuitExist(string commands) {
+    string pattern {};
+    for (string::size_type i = 0; i < commands.size(); ++i) {
+        if (i == 0) continue;
+        if (commands[i] != 'G') {
+            if ((commands[i] != 'L') && (commands[i] != 'R')) {
+                // Wrong commands
+                return string("NO");
+            }
+
+            if (commands[0] == 'G') {
+                pattern = commands.substr(0, i + 1);
+            }
+            else {
+                pattern = commands.substr(0, i);
+            }
+
+            break;
+        }
+    }
+
+    if (pattern.size() == 0) {
+        if (commands[0] == 'G') {
+            return string("NO");
+        } else {
+            return string("YES");
+        }
+    }
+
+    for (string::size_type i = 0; i < commands.size(); i += pattern.size()) {
+        if (i == 0) continue;
+        if (commands.compare(i, pattern.size(), pattern) != 0) {
+            return string("NO");
+        }
+    }
+
+    return string("YES");
+}
+
+TEST_CASE("find circuit exist", "[circuit]") {
+#if 1
+    REQUIRE(findCircuitExist("G") == string("NO"));
+    REQUIRE(findCircuitExist("GG") == string("NO"));
+    REQUIRE(findCircuitExist("GGL") == string("YES"));
+    REQUIRE(findCircuitExist("GGR") == string("YES"));
+    REQUIRE(findCircuitExist("LGG") == string("YES"));
+    REQUIRE(findCircuitExist("RGG") == string("YES"));
+    REQUIRE(findCircuitExist("LGGL") == string("NO"));
+    REQUIRE(findCircuitExist("RGGR") == string("NO"));
+    REQUIRE(findCircuitExist("GGLGGL") == string("YES"));
+    REQUIRE(findCircuitExist("GGRGGR") == string("YES"));
+    REQUIRE(findCircuitExist("LGGLGG") == string("YES"));
+    REQUIRE(findCircuitExist("RGGRGG") == string("YES"));
+    REQUIRE(findCircuitExist("GGLGGR") == string("NO"));
+    REQUIRE(findCircuitExist("GGRGGL") == string("NO"));
+    REQUIRE(findCircuitExist("LGGRGG") == string("NO"));
+    REQUIRE(findCircuitExist("RGGLGG") == string("NO"));
+    REQUIRE(findCircuitExist("RMGLGG") == string("NO"));
+#endif
+}
+
 #endif
