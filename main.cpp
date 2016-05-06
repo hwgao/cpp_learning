@@ -1120,7 +1120,7 @@ auto main() -> int {
     // Direct list initialization of a variable with a deduced type will change meaning in
     // a future version of Clang; insert an '=' to avoid a change in behavior
     // auto c{20};
-    auto c = { 20 };
+	auto c = { 20 };
 	// For single parameter, prefer the following one.
 	auto d = 20;
 
@@ -2905,5 +2905,63 @@ int main() {
     cout << solution(a) << endl;
 
     return 0;
+}
+#endif
+
+// c++ 14 make_unique
+#if 0
+#include<iostream>
+#include<memory>
+#include<vector>
+
+int main() {
+	std::cout << "===================\n";
+	auto u = std::make_unique<int>(10);
+	std::cout << "===================\n";
+	auto m = std::make_unique<int[]>(3);
+	m[0] = 10;
+	m[1] = 11;
+	m[2] = 14;
+	for (size_t i = 0; i < 3; ++i) {
+		std::cout << m[i] << std::endl;
+	}
+	std::cout << "===================\n";
+	int b[] = { 1, 4, 6 };
+	for (auto v : b) {
+		std::cout << v << std::endl;
+	}
+	std::cout << "===================\n";
+	auto a = std::vector<std::unique_ptr<int>>{};
+	a.push_back(std::make_unique<int>(10));
+	a.push_back(std::make_unique<int>(12));
+	a.push_back(std::make_unique<int>(14));
+	for (auto& v : a) {
+		std::cout << *v << std::endl;
+	}
+	std::cout << "===================\n";
+	auto g = std::unique_ptr<std::vector<int>>{ new std::vector<int>{2, 4, 6, 8} };
+	for (auto& v : *g) {
+		std::cout << v << std::endl;
+	}
+	std::cout << "===================\n";
+	auto h = std::make_unique<std::vector<int>>(10, 3);
+	for (auto& v : *h) {
+		std::cout << v << std::endl;
+	}
+	std::cout << "===================\n";
+	auto j = std::make_unique<std::vector<int>>(std::initializer_list<int>{4, 5, 6, 7});
+	j->push_back(40);
+	for (auto& v : *j) {
+		std::cout << v << std::endl;
+	}
+	std::cout << "===================\n";
+	auto l = {4, 5, 6, 7};
+	auto k = std::make_unique<std::vector<int>>(l);
+	k->push_back(40);
+	k->emplace_back(50);
+	for (auto& v : *k) {
+		std::cout << v << std::endl;
+	}
+
 }
 #endif
