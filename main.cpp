@@ -2228,7 +2228,8 @@ int main() {
 }
 #endif
 
-#if 1
+#if 0
+#include <iostream>
 #include <string>
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
@@ -2256,10 +2257,10 @@ string findCircuitExist(string commands) {
     }
 
     if (pattern.size() == 0) {
-        if (commands[0] == 'G') {
-            return string("NO");
-        } else {
+        if ((commands[0] == 'L') || (commands[0] == 'R')) {
             return string("YES");
+        } else {
+            return string("NO");
         }
     }
 
@@ -2274,25 +2275,635 @@ string findCircuitExist(string commands) {
 }
 
 TEST_CASE("find circuit exist", "[circuit]") {
-#if 1
-    REQUIRE(findCircuitExist("G") == string("NO"));
-    REQUIRE(findCircuitExist("GG") == string("NO"));
-    REQUIRE(findCircuitExist("GGL") == string("YES"));
-    REQUIRE(findCircuitExist("GGR") == string("YES"));
-    REQUIRE(findCircuitExist("LGG") == string("YES"));
-    REQUIRE(findCircuitExist("RGG") == string("YES"));
-    REQUIRE(findCircuitExist("LGGL") == string("NO"));
-    REQUIRE(findCircuitExist("RGGR") == string("NO"));
-    REQUIRE(findCircuitExist("GGLGGL") == string("YES"));
-    REQUIRE(findCircuitExist("GGRGGR") == string("YES"));
-    REQUIRE(findCircuitExist("LGGLGG") == string("YES"));
-    REQUIRE(findCircuitExist("RGGRGG") == string("YES"));
-    REQUIRE(findCircuitExist("GGLGGR") == string("NO"));
-    REQUIRE(findCircuitExist("GGRGGL") == string("NO"));
-    REQUIRE(findCircuitExist("LGGRGG") == string("NO"));
-    REQUIRE(findCircuitExist("RGGLGG") == string("NO"));
-    REQUIRE(findCircuitExist("RMGLGG") == string("NO"));
-#endif
+    SECTION("a") {
+        REQUIRE(findCircuitExist("G") == string("NO"));
+        REQUIRE(findCircuitExist("GG") == string("NO"));
+    };
+    SECTION("b") {
+        REQUIRE(findCircuitExist("W") == string("NO"));
+        REQUIRE(findCircuitExist("WT") == string("NO"));
+    };
+    SECTION("c") {
+        REQUIRE(findCircuitExist("GGL") == string("YES"));
+        REQUIRE(findCircuitExist("GGR") == string("YES"));
+        REQUIRE(findCircuitExist("LGG") == string("YES"));
+        REQUIRE(findCircuitExist("RGG") == string("YES"));
+        REQUIRE(findCircuitExist("LGGL") == string("NO"));
+        REQUIRE(findCircuitExist("RGGR") == string("NO"));
+    };
+    SECTION("d") {
+        REQUIRE(findCircuitExist("GGLGGL") == string("YES"));
+        REQUIRE(findCircuitExist("GGRGGR") == string("YES"));
+        REQUIRE(findCircuitExist("LGGLGG") == string("YES"));
+        REQUIRE(findCircuitExist("RGGRGG") == string("YES"));
+        REQUIRE(findCircuitExist("GGLGGR") == string("NO"));
+        REQUIRE(findCircuitExist("GGRGGL") == string("NO"));
+        REQUIRE(findCircuitExist("LGGRGG") == string("NO"));
+        REQUIRE(findCircuitExist("RGGLGG") == string("NO"));
+        REQUIRE(findCircuitExist("RMGLGG") == string("NO"));
+    };
 }
 
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+template <typename T>
+class GenericParser {
+public:
+    void parserPreorder() {
+        processNode();
+    }
+    void processNode() {
+        static_cast<T*>(this)->processNode();
+    }
+};
+
+class TTT {
+//    int a;
+//    char c;
+//    short d;
+public:
+    virtual void aaa() = 0;
+    virtual void bbb() = 0;
+    virtual void ccc() = 0;
+    virtual void dcc() = 0;
+    virtual void ecc() = 0;
+    virtual void fcc() = 0;
+};
+
+class EmployeeParser : public GenericParser<EmployeeParser> {
+public:
+    void processNode() {
+        cout << "I am employeeParser processNode\n";
+    }
+};
+
+int main() {
+    EmployeeParser ep;
+    ep.parserPreorder();
+
+    cout << sizeof(TTT) << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+class T {
+public:
+    static void operator delete(void *m) noexcept {
+        cout << "Customized delete of T\n";
+//        free(m);
+        ::operator delete(m);
+    }
+    virtual ~T();
+};
+
+T::~T() {
+    cout << "deconstructor\n";
+}
+
+class TT final : public T {
+public:
+    static void operator delete(void *m) noexcept {
+        cout << "Customized delete of TT\n";
+//        free(m);
+        ::operator delete(m);
+    }
+};
+
+int main() {
+    T *t = new TT();
+
+    delete t;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <regex>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+int main() {
+    std::string str;
+    bool matched;
+    while (1) {
+        std::cin >> str;
+        // std::regex e("[RL]G*|G*[RL]");
+        // std::regex e("[RL]G*", std::regex_constants::icase);
+        std::regex e{"(abc)de+\\1"};
+
+        matched = std::regex_match(str, e);
+
+        cout << (matched ? "matched":"not matched") << endl << endl;
+    }
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+#include <type_traits>
+using std::cout;
+using std::endl;
+
+enum class foo : int {
+    bar = 42
+};
+
+int main() {
+    int underlying = static_cast<int>(foo::bar);
+    assert(underlying == 42);
+
+    return 0;
+}
+#endif
+
+// Open-Closed Principle
+#if 0
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+using namespace std;
+
+enum class Color {Green, Red, Blue, White, Black, Puple, Yellow, Orange};
+enum class Size {Small, Medium, Big};
+
+struct Product {
+    string name;
+    Color color;
+    Size size;
+};
+
+template <typename T>
+struct ISpecification {
+    virtual bool is_satisfied(T* item) = 0;
+};
+
+template <typename T>
+struct IFilter {
+    virtual vector<T*> filter(vector<T*> items, ISpecification<T>& spec) = 0;
+};
+
+struct BetterFilter : IFilter<Product> {
+    vector<Product*> filter(vector<Product*> items, ISpecification<Product> &spec) override
+    {
+        vector<Product*> ret{};
+        for (auto& a : items) {
+            if (spec.is_satisfied(a)) {
+                ret.push_back(a);
+            }
+        }
+        return ret;
+    }
+};
+
+struct ColorSpecification : ISpecification<Product> {
+    Color color;
+    explicit ColorSpecification(Color c) : color(c) {}
+    bool is_satisfied(Product *item) override {
+        return (item->color == color);
+    }
+};
+
+struct SizeSpecification : ISpecification<Product> {
+    Size size;
+    explicit SizeSpecification(Size c) : size(c) {}
+    bool is_satisfied(Product *item) override {
+        return (item->size == size);
+    }
+};
+
+template <typename T>
+struct AndSpecification : ISpecification<T> {
+    ISpecification<T>& first;
+    ISpecification<T>& second;
+    AndSpecification(ISpecification<T>& first, ISpecification<T>& second) : first{first}, second{second} {}
+    bool is_satisfied(T *item) override {
+        return (first.is_satisfied(item) && second.is_satisfied(item));
+    }
+};
+
+int main() {
+    Product apple = {"Apple", Color::Green, Size::Medium};
+    Product book = {"Book", Color::Black, Size::Medium};
+    Product tv = {"TV", Color::Black, Size::Big};
+    Product car = {"Car", Color::Red, Size::Big};
+    vector<Product*> all{&apple, &book, &tv, &car};
+
+    BetterFilter bf;
+    ColorSpecification red(Color::Red);
+    ColorSpecification black(Color::Black);
+    SizeSpecification big(Size::Big);
+    AndSpecification<Product> black_big = {black, big};
+
+    auto red_things = bf.filter(all, red);
+    for_each(red_things.begin(), red_things.end(), [](Product *p){ cout << p->name << " is red\n"; });
+
+    auto black_big_things = bf.filter(all, black_big);
+    for_each(black_big_things.begin(), black_big_things.end(), [](Product *p){ cout << p->name << " is black and big\n"; });
+
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <memory>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+class foo {
+public:
+    void Func1(int n) {
+        num = n;
+        cout << "Func1 is called with " << n << endl;
+    }
+    int num;
+};
+
+void (foo::*pFunc1)(int n) = &foo::Func1;
+int foo::*pNum = &foo::num;
+
+int main() {
+    foo f;
+    (f.*pFunc1)(5);
+    cout << "num is " << (f.*pNum) << endl;
+
+    foo *p = new foo();
+    (p->*pFunc1)(1);
+    cout << "num is " << (p->*pNum) << endl;
+    delete p;
+
+    std::unique_ptr<foo> u(new foo());
+    (u.get()->*pFunc1)(10);
+    cout << "num is " << (u.get()->*pNum) << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <cassert>
+using namespace std;
+
+class HtmlElement {
+private:
+    string name;
+    string text;
+    vector<HtmlElement> children;
+    int indent_size = 2;
+    string indentString(int indent) {
+        return string(indent_size * indent, ' ');
+    }
+
+public:
+    HtmlElement(const string& name, const string& text = "") : name(name), text(text) {}
+    HtmlElement *addChild(const string& name, const string& text) {
+        this->children.emplace_back(name, text);
+        return this;
+    }
+
+    string str(int indent = 0) {
+        ostringstream oss;
+        oss << indentString(indent) << "<" << name << ">" << endl;
+        if (text.size() > 0) {
+            oss << indentString(indent + 1) <<  text <<endl;
+        }
+
+        for (auto& c : children) {
+            oss << c.str(indent + 1);
+        }
+
+        oss << indentString(indent) << "</" << name << ">" << endl;
+
+        return oss.str();
+    }
+
+    static HtmlElement buildRoot(const string &name) {
+        return HtmlElement(name);
+    }
+};
+
+int main() {
+    auto root = HtmlElement::buildRoot("ul");
+    root.addChild("li", "aaaa");
+    cout << root.str() << endl;
+}
+
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+#if 00
+void print() {}
+
+template<typename First, typename... T>
+void print(First&& f, T&&... t) {
+    std::cout << "[" << f << "]";
+    print(t...);
+}
+
+template<typename... T>
+void printValues(T&&... t) {
+    print(std::forward<T>(t)...);
+    std::cout << std::endl;
+}
+#else
+template<typename T>
+int print(T& t) {
+    std::cout << "[" << t << "]";
+    return 0;
+}
+
+template<typename... T>
+void printValues(T&&... t) {
+    (void)std::initializer_list<int>{print(t)...};
+    std::cout << "\n";
+}
+
+#endif
+
+
+int main() {
+    printValues("aaa", 3.14159, "ccc");
+
+#if 00
+    for (const auto &i : "hello world\n") {
+        cout << (int)i << endl;
+    }
+#else
+    const char a[] = "hello world";
+    for (const auto &i : a) {
+        cout << int(i) << endl;
+    }
+#endif
+
+    return 0;
+}
+#endif
+
+#if 0
+// copy elision
+#include <iostream>
+
+struct C {
+  C() {}
+  C(const C&) { std::cout << "A copy was made.\n"; }
+  C(C&&) { std::cout << "A move was made.\n"; }
+};
+
+C f() {
+  return C();
+}
+
+int main() {
+  std::cout << "Hello World!\n";
+  C obj = f();
+}
+
+#endif
+
+#if 0
+// lamda instant call
+#include <iostream>
+#include <string>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+int main(int argc, const char *[]) {
+    const std::string s1 = [&]() {
+        switch (argc) {
+            case 0: return "0 argument";
+            case 1: return "1 argument";
+            default: return "Many argument";
+        }
+    }();
+
+    cout << s1 << endl;
+
+    return s1.size();
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <cassert>
+#include "make_unique.hpp"
+using namespace pg;
+using std::cout;
+using std::endl;
+
+int main() {
+    std::vector<std::unique_ptr<int>> v;
+    v.push_back(make_unique<int>(50));
+    v.emplace_back(make_unique<int>(5));
+    for (const auto& a : v) {
+        cout << *a << endl;
+    }
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+struct Node : std::enable_shared_from_this<Node> {
+    std::vector<std::shared_ptr<Node> > children;
+    void addChild(const std::shared_ptr<Node> &c) {
+        children.push_back(c);
+        c->m_parent = this->shared_from_this();
+    }
+
+    std::shared_ptr<Node> getParent() {
+        return m_parent.lock();
+    }
+
+private:
+    std::weak_ptr<Node> m_parent;
+};
+
+int main() {
+    auto node = std::make_shared<Node>();
+    node->addChild(std::make_shared<Node>());
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <cassert>
+using std::cout;
+using std::endl;
+
+int main() {
+    int *p = new int(10);
+    cout << *p << endl;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cassert>
+using namespace std;
+
+// you can use includes, for example:
+// #include <algorithm>
+
+// you can write to stdout for debugging purposes, e.g.
+// cout << "this is a debug message" << endl;
+
+int solution(string &S) {
+    // write your code in C++11 (g++ 4.8.2)
+    std::vector<char> stack = {};
+
+    char a, b;
+    for (char &c : S) {
+        if ((c == '+') && (stack.size() >= 2)) {
+            a = stack.back();
+            stack.pop_back();
+            b = stack.back();
+            stack.pop_back();
+            stack.push_back(a+b);
+        } else if ((c == '*') && (stack.size() >= 2)) {
+            a = stack.back();
+            stack.pop_back();
+            b = stack.back();
+            stack.pop_back();
+            stack.push_back(a*b);
+        } else if ((c >= '0') && (c <= '9')) {
+            stack.push_back(c - '0');
+        } else {
+            return -1;
+        }
+    }
+
+    if (stack.size() == 1) {
+        return stack.back();
+    } else {
+        return -1;
+    }
+}
+
+int main() {
+    string s = "13+62*7+*";
+    cout << solution(s) << endl;
+    return 0;
+}
+#endif
+
+#if 1
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::vector;
+
+int solution(vector<int> &A) {
+    // write your code in C++11 (g++ 4.8.2)
+    long long result = 0;
+    long long result2 = 0;
+    std::for_each(A.cbegin(), A.cend(), [&result](int a) {result += a;});
+
+    int zeros = 0;
+    vector<int>::size_type i, j;
+    for (i = A.size() - 1; i != static_cast<vector<int>::size_type>(-1); --i) {
+        result2 = result;
+        for (j = 0; j <= i; ++j) {
+            if (result2 == 0) {
+                zeros += 1;
+                if (zeros > 1000000000) {
+                    return -1;
+                }
+            }
+            result2 -= A[j];
+        }
+        result -= A[i];
+    }
+
+    return zeros;
+}
+
+int main() {
+    vector<int> a = {2, -2, 3, 0, 4, -7, 20, -20};
+    cout << solution(a) << endl;
+
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cassert>
+using std::cout;
+using std::endl;
+using std::vector;
+
+int solution(vector<int> &A) {
+    // write your code in C++11 (g++ 4.8.2)
+    int zeros = 0;
+    size_t i, j;
+    for (i = 0; i < A.size(); ++i) {
+        long long result = 0;
+        for (j = i; j < A.size(); ++j) {
+            result += A[j];
+            if (result == 0) {
+                zeros += 1;
+                if (zeros > 1000000000) {
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return zeros;
+}
+
+int main() {
+    vector<int> a = {2, -2, 3, 0, 4, -7};
+    cout << solution(a) << endl;
+
+    return 0;
+}
 #endif
